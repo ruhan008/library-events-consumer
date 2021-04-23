@@ -1,0 +1,57 @@
+spring:
+  profiles:
+    active: non-prod
+server:  port: 8082
+---
+spring:  config:    activate:      on-profile: local
+  kafka:    consumer:      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: library-events-consumer-group
+    template:      default-topic: library-events
+    producer:      bootstrap-servers:      - localhost:9092,localhost:9093,localhost:9094
+      key-Serializer: org.apache.kafka.common.serialization.IntegerSerializer
+      value-Serializer: org.apache.kafka.common.serialization.StringSerializer
+  datasource:    url: jdbc:h2:mem:test
+    driver-class-name: org.h2.Driver
+  jpa:    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+  h2:    console:      enabled: true
+---
+spring:
+  config:
+    activate:
+      on-profile: non-prod
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9095,localhost:9096,localhost:9097
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: library-events-consumer-group
+      ssl:
+        trust-store-location: file:D:/My Application Suite/ssl/client.truststore.jks
+        trust-store-password: securekafka
+        key-store-location: file:D:/My Application Suite/ssl/client.keystore.jks
+        key-store-password: securekafka
+    template:
+      default-topic: library-events
+    producer:
+      bootstrap-servers:
+      - localhost:9095,localhost:9096,localhost:9097
+      key-Serializer: org.apache.kafka.common.serialization.IntegerSerializer
+      value-Serializer: org.apache.kafka.common.serialization.StringSerializer
+    properties:
+      security:
+        protocol: SSL
+      ssl.endpoint.identification.algorithm:
+  datasource:
+    url: jdbc:h2:mem:test
+    driver-class-name: org.h2.Driver
+  jpa:
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+  h2:
+    console:
+      enabled: true
